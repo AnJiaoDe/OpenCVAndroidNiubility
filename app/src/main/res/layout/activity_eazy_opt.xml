@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".MainActivity">
+
+        <Button
+            android:id="@+id/btn_gray"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="图像灰度" />
+        <Button
+            android:id="@+id/btn_gray_jni"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="图像灰度_jni" />
+        <Button
+            android:id="@+id/btn_erode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="图像腐蚀" />
+        <Button
+            android:id="@+id/btn_swell"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="图像膨胀" />
+        <Button
+            android:id="@+id/btn_blur"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="图像模糊" />
+        <Button
+            android:id="@+id/btn_canny"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="图像边缘检测" />
+<!--        <Button-->
+<!--            android:id="@+id/btn_canny"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="图像阈值" />-->
+<!--        <Button-->
+<!--            android:id="@+id/btn_canny"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="图像修复" />-->
+<!--        <Button-->
+<!--            android:id="@+id/btn_canny"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="图像油画" />-->
+<!--        <Button-->
+<!--            android:id="@+id/btn_canny"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="图像水幕"/>-->
+<!--        <Button-->
+<!--            android:id="@+id/btn_canny"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="图像光照"/>-->
+<!--        <Button-->
+<!--            android:id="@+id/btn_canny"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="图像混合"/>-->
+        <Button
+            android:id="@+id/btn_cover"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="图像叠加"/>
+    </LinearLayout>
+</ScrollView>
