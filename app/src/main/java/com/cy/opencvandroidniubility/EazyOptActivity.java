@@ -143,18 +143,6 @@ public class EazyOptActivity extends AppCompatActivity {
                         new OnPermissionCallback(EazyOptActivity.this) {
                             @Override
                             public void onPermissionHave() {
-                                /**
-                                 * // 将边缘检测后的图 cannyImage 边以黑色的形式贴在原图 image上。
-                                 * void pasteEdge(Mat &image, Mat &outImg, IplImage cannyImage)
-                                 * {
-                                 *     Mat cannyMat;
-                                 *     //将IplImage转化为Mat
-                                 *     cannyMat = cvarrToMat(&cannyImage);
-                                 *     //颜色反转
-                                 *     cannyMat = cannyMat < 100;
-                                 *     image.copyTo(outImg, cannyMat);
-                                 * }
-                                 */
                                 Mat mat_src = new Mat();
                                 Mat mat_blur = new Mat();
                                 Mat mat_dst = new Mat();
@@ -167,21 +155,7 @@ public class EazyOptActivity extends AppCompatActivity {
                                 Imgproc.Canny(mat_blur, mat_dst, 30, 30 * 3, 3);
 
                                 Utils.matToBitmap(mat_dst, bitmap_deal);
-                                //颜色反转
-//                                GPUImageFilter gpuImageFilter = new GPUImageColorInvertFilter();
-//                                Bitmap bitmapR=bitmap_filter(EazyOptActivity.this,bitmap_deal,gpuImageFilter);
-
-//                                Mat mat3 = new Mat();
-//                                Utils.bitmapToMat(bitmapR,mat3);
-
-
-//                                Mat mat4 = new Mat();
-//                                Utils.bitmapToMat(bitmap, mat4);
-//                                mat4.copyTo(mat_r, mat3);
-//
-//                                Bitmap bitmap_ = Bitmap.createBitmap(bitmapR.getWidth(),bitmapR.getHeight(), Bitmap.Config.RGB_565);
-//                                Utils.matToBitmap(mat_r,bitmap_);
-//                                iv_deal.setImageBitmap(bitmapR);
+                                iv_deal.setImageBitmap(bitmap_deal);
                             }
                         });
             }
