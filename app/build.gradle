@@ -43,8 +43,7 @@ dependencies {
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
 //    api project(path: ':opencvandroidniubility')
 
-    api 'com.github.AnJiaoDe:OpenCVAndroidNiubility:V1.0.0'
-
+    api 'com.github.AnJiaoDe:OpenCVAndroidNiubility:V1.0.1'
     api 'com.github.AnJiaoDe:BaseDialog:V1.2.0'
     api 'com.github.AnJiaoDe:AndroidView:V1.2.3'
     api 'com.github.AnJiaoDe:PermissionNiubility:V1.0.9'
