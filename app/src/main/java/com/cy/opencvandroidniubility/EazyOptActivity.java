@@ -13,8 +13,6 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.cy.dialog.BaseDialog;
-import com.cy.permissionniubility.OnPermissionCallback;
-import com.cy.permissionniubility.PermissionUtils;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -47,219 +45,179 @@ public class EazyOptActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 baseDialog.show();
-                PermissionUtils.checkPermission(EazyOptActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        new OnPermissionCallback(EazyOptActivity.this) {
-                            @Override
-                            public void onPermissionHave() {
-                                Mat mat_src = new Mat();
-                                Mat mat_dst = new Mat();
-                                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gou_1);
-                                iv_normal.setImageBitmap(bitmap);
+                Mat mat_src = new Mat();
+                Mat mat_dst = new Mat();
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gou_1);
+                iv_normal.setImageBitmap(bitmap);
 
-                                Bitmap bitmap_deal = bitmap.copy(Bitmap.Config.RGB_565, true);
-                                Utils.bitmapToMat(bitmap_deal, mat_src);
-                                Imgproc.cvtColor(mat_src, mat_dst, Imgproc.COLOR_BGR2GRAY);
-                                Utils.matToBitmap(mat_dst, bitmap_deal);
-                                iv_deal.setImageBitmap(bitmap_deal);
-                            }
-                        });
+                Utils.bitmapToMat(bitmap, mat_src);
+
+                Bitmap bitmap_deal = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.RGB_565);
+                Imgproc.cvtColor(mat_src, mat_dst, Imgproc.COLOR_BGR2GRAY);
+                Utils.matToBitmap(mat_dst, bitmap_deal);
+                iv_deal.setImageBitmap(bitmap_deal);
             }
         });
         findViewById(R.id.btn_gray_jni).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 baseDialog.show();
-                PermissionUtils.checkPermission(EazyOptActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        new OnPermissionCallback(EazyOptActivity.this) {
-                            @Override
-                            public void onPermissionHave() {
-                                Mat mat_src = new Mat();
-                                Mat mat_dst = new Mat();
-                                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gou_1);
-                                iv_normal.setImageBitmap(bitmap);
+                Mat mat_src = new Mat();
+                Mat mat_dst = new Mat();
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gou_1);
+                iv_normal.setImageBitmap(bitmap);
 
+                Utils.bitmapToMat(bitmap, mat_src);
 
-                                Bitmap bitmap_deal = bitmap.copy(Bitmap.Config.RGB_565, true);
-                                Utils.bitmapToMat(bitmap_deal, mat_src);
-//                                Imgproc.cvtColor(mat_src, mat_dst, Imgproc.COLOR_BGR2GRAY);
-                                //自定义JNI方法调用
-                                JniUtils.gray(mat_src.nativeObj,mat_dst.nativeObj);
-                                Utils.matToBitmap(mat_dst, bitmap_deal);
-                                iv_deal.setImageBitmap(bitmap_deal);
-                            }
-                        });
+                Bitmap bitmap_deal = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.RGB_565);
+                //Imgproc.cvtColor(mat_src, mat_dst, Imgproc.COLOR_BGR2GRAY);
+                //自定义JNI方法调用
+                JniUtils.gray(mat_src.nativeObj, mat_dst.nativeObj);
+                Utils.matToBitmap(mat_dst, bitmap_deal);
+                iv_deal.setImageBitmap(bitmap_deal);
+            }
+        });
+        findViewById(R.id.btn_bilateralFilter).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                baseDialog.show();
+                /**
+                 * Bilateral filter error, Assertion failed ((src.type() == CV_8UC1 || src.type() == CV_8UC3) && src.data != dst.data)
+                 * 一、概述
+                 *
+                 *         这个异常是在用OpenCV做高斯双边滤波做图像美化的时候出现的异常。这个异常信息的意思是图像类型不对。高斯双边滤波只允许CV_8UC1或者CV_8UC3即只能加载单通多的灰色图片或者三通道的彩色图片。
+                 *
+                 * 二、产生的原因
+                 *
+                 * 　　原因在于我在做测试的时候直接用BitmapFactory加载了一个Bitmap对象，并把Bitmap对象通过opencv的Uitls工具转换为了Mat对象，然后操作了这个Mat对象。由于Bitmap默认的通道时RGBA，而openCV默认的是GBR，由于通道不一致所以导致了以上的那个错误。
+                 *
+                 * 三、解决方法
+                 *
+                 * 　　解决方案也是比较简单，把RGBA色彩控件转换为BGR色彩空间就OK了。具体的转换是通过 Imgproc.cvtColor(target,dst,Imgproc.COLOR_RGBA2BGR);
+                 */
+
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.man_ls);
+                iv_normal.setImageBitmap(bitmap);
+
+                Mat mat_src = new Mat();
+                Mat mat_dst = new Mat();
+
+                Utils.bitmapToMat(bitmap, mat_src);
+
+                Bitmap bitmap_deal = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.RGB_565);
+                Imgproc.cvtColor(mat_src, mat_src, Imgproc.COLOR_RGB2BGR);
+                Imgproc.bilateralFilter(mat_src, mat_dst, 25, 50, 12.5);
+//                JniUtils.bilateralFilter(mat_src.nativeObj, mat_dst.nativeObj);
+
+                Imgproc.cvtColor(mat_dst, mat_dst, Imgproc.COLOR_BGR2RGB);
+                Utils.matToBitmap(mat_dst, bitmap_deal);
+                iv_deal.setImageBitmap(bitmap_deal);
+            }
+        });
+        findViewById(R.id.btn_bilateralFilter_jni).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                baseDialog.show();
+
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.man_ls);
+                iv_normal.setImageBitmap(bitmap);
+
+                Mat mat_src = new Mat();
+                Mat mat_dst = new Mat();
+
+                Utils.bitmapToMat(bitmap, mat_src);
+
+                Bitmap bitmap_deal = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.RGB_565);
+                Imgproc.cvtColor(mat_src, mat_src, Imgproc.COLOR_RGB2BGR);
+//                Imgproc.bilateralFilter(mat_src, mat_dst,25, 50, 12.5);
+                JniUtils.bilateralFilter(mat_src.nativeObj, mat_dst.nativeObj);
+
+                Imgproc.cvtColor(mat_dst, mat_dst, Imgproc.COLOR_BGR2RGB);
+                Utils.matToBitmap(mat_dst, bitmap_deal);
+                iv_deal.setImageBitmap(bitmap_deal);
             }
         });
         findViewById(R.id.btn_erode).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 baseDialog.show();
-                PermissionUtils.checkPermission(EazyOptActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        new OnPermissionCallback(EazyOptActivity.this) {
-                            @Override
-                            public void onPermissionHave() {
-                                Mat mat_src = new Mat();
-                                Mat mat_dst = new Mat();
-                                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gou_2);
-                                iv_normal.setImageBitmap(bitmap);
+                Mat mat_src = new Mat();
+                Mat mat_dst = new Mat();
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gou_2);
+                iv_normal.setImageBitmap(bitmap);
 
-                                Bitmap bitmap_deal = bitmap.copy(Bitmap.Config.RGB_565, true);
-                                Utils.bitmapToMat(bitmap_deal, mat_src);
-                                Mat mat_deal = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(15, 15));
-                                Imgproc.erode(mat_src, mat_dst, mat_deal);
-                                Utils.matToBitmap(mat_dst, bitmap_deal);
-                                iv_deal.setImageBitmap(bitmap_deal);
-                            }
-                        });
+                Utils.bitmapToMat(bitmap, mat_src);
+
+                Bitmap bitmap_deal = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.RGB_565);
+                Imgproc.erode(mat_src, mat_dst, Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(15, 15)));
+                Utils.matToBitmap(mat_dst, bitmap_deal);
+                iv_deal.setImageBitmap(bitmap_deal);
             }
         });
         findViewById(R.id.btn_blur).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 baseDialog.show();
-                PermissionUtils.checkPermission(EazyOptActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        new OnPermissionCallback(EazyOptActivity.this) {
-                            @Override
-                            public void onPermissionHave() {
-                                Mat mat_src = new Mat();
-                                Mat mat_dst = new Mat();
-                                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.mao_1);
-                                iv_normal.setImageBitmap(bitmap);
+                Mat mat_src = new Mat();
+                Mat mat_dst = new Mat();
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.mao_1);
+                iv_normal.setImageBitmap(bitmap);
 
-                                Bitmap bitmap_deal = bitmap.copy(Bitmap.Config.RGB_565, true);
-                                Utils.bitmapToMat(bitmap_deal, mat_src);
-                                Imgproc.blur(mat_src, mat_dst, new Size(17, 17));
-                                Utils.matToBitmap(mat_dst, bitmap_deal);
-                                iv_deal.setImageBitmap(bitmap_deal);
-                            }
-                        });
+                Utils.bitmapToMat(bitmap, mat_src);
+
+                Bitmap bitmap_deal = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.RGB_565);
+                Imgproc.blur(mat_src, mat_dst, new Size(17, 17));
+                Utils.matToBitmap(mat_dst, bitmap_deal);
+                iv_deal.setImageBitmap(bitmap_deal);
             }
         });
         findViewById(R.id.btn_canny).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 baseDialog.show();
-                PermissionUtils.checkPermission(EazyOptActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        new OnPermissionCallback(EazyOptActivity.this) {
-                            @Override
-                            public void onPermissionHave() {
-                                Mat mat_src = new Mat();
-                                Mat mat_blur = new Mat();
-                                Mat mat_dst = new Mat();
-                                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.man_ls);
-                                iv_normal.setImageBitmap(bitmap);
+                Mat mat_src = new Mat();
+                Mat mat_blur = new Mat();
+                Mat mat_dst = new Mat();
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.man_ls);
+                iv_normal.setImageBitmap(bitmap);
 
-                                Bitmap bitmap_deal = bitmap.copy(Bitmap.Config.RGB_565, true);
-                                Utils.bitmapToMat(bitmap_deal, mat_src);
-                                Imgproc.blur(mat_src, mat_blur, new Size(3, 3));
-                                Imgproc.Canny(mat_blur, mat_dst, 30, 30 * 3, 3);
+                Utils.bitmapToMat(bitmap, mat_src);
 
-                                Utils.matToBitmap(mat_dst, bitmap_deal);
-                                iv_deal.setImageBitmap(bitmap_deal);
-                            }
-                        });
+                Bitmap bitmap_deal = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.RGB_565);
+                Imgproc.blur(mat_src, mat_blur, new Size(3, 3));
+                Imgproc.Canny(mat_blur, mat_dst, 30, 30 * 3, 3);
+                Utils.matToBitmap(mat_dst, bitmap_deal);
+                iv_deal.setImageBitmap(bitmap_deal);
             }
         });
         findViewById(R.id.btn_cover).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 baseDialog.show();
-                PermissionUtils.checkPermission(EazyOptActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        new OnPermissionCallback(EazyOptActivity.this) {
-                            @Override
-                            public void onPermissionHave() {
-                                //定义一个Mat类型，用于存放，图像的ROI
-//                                Mat imageROI;
-////方法一
-//                                imageROI = image(Rect(800, 350, logo.cols, logo.rows));
-////方法二
-////imageROI=image(Range(350,350+logo.rows),Range(800,800+logo.cols));
-//
-////将logo加到原图上
-//                                addWeighted(imageROI, 0.5, logo, 0.3, 0., imageROI);
-//
-////显示结果
-//                                namedWindow("【4】原画+logo图");
-//                                imshow("【4】原画+logo图", image);
+                iv_deal.setImageBitmap(null);
 
+                Mat mat_bottom = new Mat();
+                Mat mat_top = new Mat();
+                Mat mat_rect = new Mat();
 
-                                // 初始化数据
-                                Mat mat1 = new Mat();
-                                Mat mat2 = new Mat();
-                                Mat mat1Sub = new Mat();
-//                                Mat mask= new Mat();
+                Bitmap bitmap_bottom = BitmapFactory.decodeResource(getResources(),
+                        R.drawable.man_ls);
+                Bitmap bitmap_top = BitmapFactory.decodeResource(getResources(),
+                        R.drawable.gou_2);
+                Bitmap bitmap_deal = Bitmap.createBitmap(bitmap_bottom.getWidth(), bitmap_bottom.getHeight(), Bitmap.Config.RGB_565);
 
-                                // 加载图片
-                                Bitmap bt1 = BitmapFactory.decodeResource(getResources(),
-                                        R.drawable.man_ls);
-                                Bitmap bt2 = BitmapFactory.decodeResource(getResources(),
-                                        R.drawable.gou_2);
-                                Bitmap bt3 = null;
+                Utils.bitmapToMat(bitmap_bottom, mat_bottom);
+                Utils.bitmapToMat(bitmap_top, mat_top);
 
-                                // 转换数据
-                                Utils.bitmapToMat(bt1, mat1);
-                                Utils.bitmapToMat(bt2, mat2);
-//                                Imgproc.cvtColor(mat2, mask, Imgproc.COLOR_BGR2GRAY);
+                Rect rec = new Rect(0, 0, mat_top.cols(), mat_top.rows());
+                mat_rect = mat_bottom.submat(rec);
 
-                                /** 方法一加权 高级方式 可实现水印效果*********/
+                mat_top.copyTo(mat_rect);
+                Utils.matToBitmap(mat_bottom, bitmap_deal);
+                iv_normal.setImageBitmap(bitmap_deal);
 
-//                                 mat1Sub=mat1.submat(0, (int) (mat2.rows()*1f/2), 0, (int) (mat2.cols()*1f/2));
-//                                 Core.addWeighted(mat1Sub, 0, mat2, 1, 0, mat1Sub);
-
-                                /** 方法二 求差 ********/
-
-                                // submat(y坐标, 图片2的高, x坐标，图片2的宽);
-                                // mat1Sub=mat1.submat(0, mat2.rows(), 0, mat2.cols());
-                                // mat2.copyTo(mat1Sub);
-
-                                /*** 方法三兴趣区域裁剪 **/
-                                // 定义感兴趣区域Rect(x坐标，y坐标,图片2的宽，图片2的高)
-                                Rect rec = new Rect(0, 0, mat2.cols(), mat2.rows());
-//                                // submat(y坐标, 图片2的高, x坐标，图片2的宽);
-                                mat1Sub = mat1.submat(rec);
-
-                                mat2.copyTo(mat1Sub);
-
-//                                //【1】读入图像
-//                                Mat srcImage1= imread("dota_pa.jpg");
-//                                Mat logoImage= imread("dota_logo.jpg");
-//                                if(!srcImage1.data ) { printf("你妹，读取srcImage1错误~！ \n"); return false; }
-//                                if(!logoImage.data ) { printf("你妹，读取logoImage错误~！ \n"); return false; }
-//
-//                                //【2】定义一个Mat类型并给其设定ROI区域
-//                                Mat imageROI= srcImage1(Rect(200,250,logoImage.cols,logoImage.rows));
-//
-//                                //【3】加载掩模（必须是灰度图）
-//                                Mat mask= imread("dota_logo.jpg",0);
-//
-//                                //【4】将掩膜拷贝到ROI
-//                                logoImage.copyTo(imageROI,mask);
-
-                                //转化为android识别的图像数据注意bt3的宽高要和mat1一至
-                                bt3 = Bitmap.createBitmap(mat1.cols(), mat1.rows(), Bitmap.Config.RGB_565);
-                                Utils.matToBitmap(mat1, bt3);
-                                iv_normal.setImageBitmap(bt3);
-                            }
-                        });
             }
         });
     }
 
-
-    /**
-     * 从Assets中读取图片
-     */
-    private Bitmap getImageFromAssetsFile(String fileName) {
-        Bitmap image = null;
-        AssetManager am = getResources().getAssets();
-        try {
-            InputStream is = am.open(fileName);
-            image = BitmapFactory.decodeStream(is);
-            is.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return image;
-
-    }
 }

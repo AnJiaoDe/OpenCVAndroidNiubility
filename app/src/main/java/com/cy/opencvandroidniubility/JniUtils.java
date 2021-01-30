@@ -16,4 +16,5 @@ public class JniUtils {
         System.loadLibrary("native-lib");
     }
     public static  native  void gray(long mat_addr_src,long mat_addr_dst);
+    public static  native  void bilateralFilter(long mat_addr_src,long mat_addr_dst);
 }
