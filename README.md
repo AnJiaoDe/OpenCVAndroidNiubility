@@ -37,7 +37,7 @@ allprojects {
 
 ```java
 dependencies {
-    api 'com.github.AnJiaoDe:OpenCVAndroidNiubility:V1.0.0'//基于OpenCV4.5.1
+    api 'com.github.AnJiaoDe:OpenCVAndroidNiubility:V1.0.1'//基于OpenCV4.5.1
 }
 ```
 3.混淆已配置到库内部，无需做混淆配置
