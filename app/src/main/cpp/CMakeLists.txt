@@ -9,8 +9,10 @@ cmake_minimum_required(VERSION 3.4.1)
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
 # Gradle automatically packages shared libraries with your APK.
-#配置路径
-set(path_so E:\\Github_\\OpenCVAndroidNiubility\\opencvandroidniubility\\src\\main\\jniLibs\\arm64-v8a)
+#配置路径,引用SO库，必须将SO库的父文件夹放在CMakeLists.txt的同级或者子文件夹内
+set(path_so ${CMAKE_SOURCE_DIR}/jniLibs/${ANDROID_ABI})
+#已经不灵，相当神奇
+#set(path_so F:\\Github_\\OpenCVAndroidNiubility\\opencvandroidniubility\\src\\main\\jniLibs\\arm64-v8a)
 # 设置cpp目录路径
 include_directories(include)
 add_library( # Sets the name of the library.
